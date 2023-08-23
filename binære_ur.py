@@ -10,12 +10,14 @@ minute_color = (0, 0, 255)
 second_color = (255, 0, 0)
 hundrefths_color = (127, 127, 0)
 off = (0, 0, 0)
+t = datetime.datetime.now()
 
 hat.clear()
 
 hat.show_message("Programmet Starter", scroll_speed=0.05)
 
 hat.clear()
+hat.show_message("24 timers ur ")
 
 def display_binary(value, row, color):
     binary_str = "{0:8b}".format(value)
@@ -24,6 +26,7 @@ def display_binary(value, row, color):
             hat.set_pixel(x, row, color)
         else:
             hat.set_pixel(x, row, off)
+   
 
 
 
@@ -46,6 +49,7 @@ def display_vertical(value, row, color):
             hat.set_pixel(row, y,off)
 
 def lodret():
+ 
  while True:
     t = datetime.datetime.now()
     display_vertical((int(t.hour//10)), 2, hour_color)
@@ -55,11 +59,25 @@ def lodret():
     display_vertical((int(t.second//10)), 6, second_color)
     display_vertical((int((t.second%10)//1)), 7, second_color)
     time.sleep(0.0001)
-   
+
 hat.clear()
 
 lodret()
 hat.clear()
+
+def twelve_timer(value):
+   if value >= 13:
+      value=value -12
+      return value
+   else:
+      return value 
+
+   
+   
+
+
+
+
 
 
 
