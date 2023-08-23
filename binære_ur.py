@@ -1,6 +1,11 @@
 #!/usr/bin/env python
+"""
+Det Binære Ur- Det viser binære uret i 12timers og 24 timers i både seks søjler lodret og i tre rækker vandret.
+LEDerne er brugt til at vise uret som timer, minutter og sekunder 
 
-from sense_hat import SenseHat
+"""
+
+from sense_emu import SenseHat
 import time, datetime
 
 hat = SenseHat()
@@ -17,7 +22,13 @@ hat.clear()
 hat.show_message("Programmet Starter", scroll_speed=0.05)
 
 hat.clear()
-hat.show_message("24 timers ur ")
+
+def twelve_timer(value):
+   if value >= 13:
+      value=value -12
+      return value
+   else:
+      return value 
 
 def display_binary(value, row, color):
     binary_str = "{0:8b}".format(value)
@@ -31,6 +42,7 @@ def display_binary(value, row, color):
 
 
 def vandret():
+ 
  while True:
     t = datetime.datetime.now()
     display_binary(t.hour, 3, hour_color)
@@ -60,17 +72,39 @@ def lodret():
     display_vertical((int((t.second%10)//1)), 7, second_color)
     time.sleep(0.0001)
 
-hat.clear()
+def twelve_timer_visning(use_24_hour_format):
+    t = datetime.datetime.now()
+    if not use_24_hour_format:
+        t.hour = twelve_timer(t.hour)
+    lodret(t)
+    vandret(t)
 
-lodret()
-hat.clear()
+def main():
+    hat.show_message("Programmet Starter", scroll_speed=0.05)
+    hat.clear()
+    
+    try:
+        use_vertical = True
+        use_24_hour_format = True
+        
+        while True:
+            for event in hat.stick.get_events():
+                if event.action == 'pressed':
+                    if event.direction == 'up':
+                        use_vertical = not use_vertical
+                    elif event.direction == 'down':
+                        use_24_hour_format = not use_24_hour_format
+            
+            twelve_timer_visning(use_24_hour_format)
+            
+    except KeyboardInterrupt:
+        hat.show_message("Programmet slutter")
+        hat.clear()
 
-def twelve_timer(value):
-   if value >= 13:
-      value=value -12
-      return value
-   else:
-      return value 
+if __name__ == "__main__":
+    main()
+
+
 
    
    
