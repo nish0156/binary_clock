@@ -5,7 +5,8 @@ LEDerne er brugt til at vise uret som timer, minutter og sekunder
 
 """
 
-from sense_emu import SenseHat
+import sys
+from sense_hat import SenseHat
 import time, datetime
 
 hat = SenseHat()
@@ -17,11 +18,11 @@ hundrefths_color = (127, 127, 0)
 off = (0, 0, 0)
 t = datetime.datetime.now()
 
-hat.clear()
 
-hat.show_message("Programmet Starter", scroll_speed=0.05)
 
 hat.clear()
+
+
 
 def twelve_timer(value):
    if value >= 13:
@@ -38,20 +39,6 @@ def display_binary(value, row, color):
         else:
             hat.set_pixel(x, row, off)
    
-
-
-
-def vandret():
- 
- while True:
-    t = datetime.datetime.now()
-    display_binary(t.hour, 3, hour_color)
-    display_binary(t.minute, 4, minute_color)
-    display_binary(t.second, 5, second_color)
-    time.sleep(0.0001)
-
-
-
 def display_vertical(value, row, color):
     binary_str = "{0:8b}".format(value)
     for y in range(0, 8):
@@ -60,7 +47,23 @@ def display_vertical(value, row, color):
         else:
             hat.set_pixel(row, y,off)
 
-def lodret():
+
+
+def vandret():
+ while True:
+    t = datetime.datetime.now()
+
+    display_binary(t.hour, 3, hour_color)
+    display_binary(t.minute, 4, minute_color)
+    display_binary(t.second, 5, second_color)
+    time.sleep(0.0001)
+
+
+
+
+
+
+def lodret(): 
  
  while True:
     t = datetime.datetime.now()
@@ -76,26 +79,26 @@ def twelve_timer_visning(use_24_hour_format):
     t = datetime.datetime.now()
     if not use_24_hour_format:
         t.hour = twelve_timer(t.hour)
-    lodret(t)
-    vandret(t)
+    lodret
+    hat.clear()
+    
+
+
 
 def main():
     hat.show_message("Programmet Starter", scroll_speed=0.05)
     hat.clear()
     
     try:
-        use_vertical = True
-        use_24_hour_format = True
-        
         while True:
             for event in hat.stick.get_events():
                 if event.action == 'pressed':
                     if event.direction == 'up':
-                        use_vertical = not use_vertical
+                        lodret()
                     elif event.direction == 'down':
-                        use_24_hour_format = not use_24_hour_format
-            
-            twelve_timer_visning(use_24_hour_format)
+                         vandret()
+
+        
             
     except KeyboardInterrupt:
         hat.show_message("Programmet slutter")
