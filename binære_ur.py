@@ -5,7 +5,6 @@ LEDerne er brugt til at vise uret som timer, minutter og sekunder
 
 """
 
-import sys
 from sense_hat import SenseHat
 import time, datetime
 
@@ -50,6 +49,7 @@ def display_vertical(value, row, color):
 
 
 def vandret():
+ 
  while True:
     t = datetime.datetime.now()
 
@@ -82,7 +82,6 @@ def twelve_timer_visning(use_24_hour_format):
     lodret
     hat.clear()
     
-
 
 
 def main():
