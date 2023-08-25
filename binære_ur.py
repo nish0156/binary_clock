@@ -5,22 +5,21 @@ LEDerne er brugt til at vise uret som timer, minutter og sekunder
 
 """
 
-import sys
-from sense_emu import SenseHat,ACTION_PRESSED, ACTION_HELD, ACTION_RELEASED
+import argparse
+from sense_hat import SenseHat
 import time, datetime
 import sys
 import signal
 
 hat = SenseHat()
 
-x = True
-y = True
 
 
 hour_color = (0, 255, 0)
 minute_color = (0, 0, 255)
 second_color = (255, 0, 0)
 off = (0, 0, 0)
+
 
 
 
@@ -71,29 +70,44 @@ def display_vertical(value, column, color):
 
 
 def vandret(event):
+   """Funktion til at vise uret i vandret  og i 24 timer format"""
    global direction, timer
    direction="vandret"
    timer=24
+   hat.clear()
 
 
 
 def lodret(event): 
+   """Funktion til at vise uret i lodret  og i 24 timer format"""
+
    global direction, timer
    direction="lodret"
    timer=24
+   hat.clear()
+
 
 def vandret_12(event):
+   """Funktion til at vise uret i vandret  og i 12 timer format"""
    global direction, timer
    direction="vandret"
    timer=12
+   hat.clear()
+   print('12 timer visning')
+
+
     
 def lodret_12(event):
+   """Funktion til at vise uret i lodret  og i 12 timer format"""
    global direction, timer
    direction="lodret"
    timer=12
+   hat.clear()
+   print('12 timer visning')
 
 
-
+"""funktionerne er lagt til joystick direktion.
+    Når joysticket er trykket så er funktion kaldt """
 hat.stick.direction_up = vandret
 hat.stick.direction_down =lodret
 hat.stick.direction_left= vandret_12
@@ -102,38 +116,59 @@ hat.stick.direction_right= lodret_12
 
 
 
-
 def main():
     global direction, timer
     timer=12
     direction="vandret"
+    
+    parser=argparse.ArgumentParser(description="Det binære ur viser tiden i binære form i 4 forskellige format ")
+
+    parser.add_argument('-d',action='store', dest='direction',default='vandret',help='vandret eller lodret ')
+    parser.add_argument('-t',action='store', dest='timer',default='24',help='12 hr eller 24 hr ')
+    args=parser.parse_args()
+
+    print(args.direction)
+    print(args.timer)
+
+
+    direction=args.direction
+    timer=args.timer
+
+
+
+    hat.clear()
+
+
     hat.show_message("Programmet Starter", scroll_speed=0.05)
     hat.clear()
     
-    try:
-        while True:
+    
+    while True:
           t=datetime.datetime.now()
           if(timer==12):
-            twelve_timer(t.hour)
+            h=twelve_timer(t.hour)
+          else:
+              h=t.hour
 
           if(direction=="vandret"):
-             display_binary(t.hour, 3, hour_color)
+             """Viser binære uret i tre rækker i vandrettet direktion"""
+             display_binary(h, 3, hour_color)
              display_binary(t.minute, 4, minute_color)
              display_binary(t.second, 5, second_color)
              time.sleep(0.0001)
           
           if(direction=="lodret"):
-           display_vertical((int(t.hour//10)), 2, hour_color)
-           display_vertical((int((t.hour%10)//1)), 3, hour_color)
+           """Viser binære uret i seks søjler vandret"""
+
+           display_vertical((int(h//10)), 2, hour_color)
+           display_vertical((int((h%10)//1)), 3, hour_color)
            display_vertical((int(t.minute//10)), 4, minute_color)
            display_vertical((int((t.minute%10)//1)), 5, minute_color)
            display_vertical((int(t.second//10)), 6, second_color)
            display_vertical((int((t.second%10)//1)), 7, second_color)
            time.sleep(0.0001)
  
-    except KeyboardInterrupt:
-        hat.show_message("Programmet slutter")
-        hat.clear()
+   
 
 if __name__ == "__main__":
     main()
